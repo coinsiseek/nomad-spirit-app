@@ -262,7 +262,7 @@ export default function AdminDashboard() {
                                 <span className="text-gray-400"> edzés használva</span>
                             </div>
                         ) : (
-                            <div className="text-sm text-yellow-400">Nincsen aktív beutaló</div>
+                            <div className="text-sm text-yellow-400">Nincsen aktív bérlet</div>
                         );
 
                         return (
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
                                     <button
                                         onClick={() => handleMarkAttendance(member.id)}
                                         disabled={marking === member.id || !activePass}
-                                        title={!activePass ? "Nincs aktív beutaló" : ""}
+                                        title={!activePass ? "Nincs aktív bérlet" : ""}
                                         className={`px-6 py-2 rounded font-semibold transition ${
                                             marking === member.id
                                                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
                                     <button
                                         onClick={() => handleCreatePass(member.id)}
                                         disabled={creatingPass === member.id || !!activePass}
-                                        title={activePass ? "A tagnak már van aktív beutazása" : ""}
+                                        title={activePass ? "A tagnak már van aktív bérlete" : ""}
                                         className={`px-6 py-2 rounded font-semibold transition ${
                                             creatingPass === member.id
                                                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
@@ -315,7 +315,7 @@ export default function AdminDashboard() {
                                                 : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
                                         }`}
                                     >
-                                        {creatingPass === member.id ? 'Létrehozás...' : 'Új Beutaló'}
+                                        {creatingPass === member.id ? 'Létrehozás...' : 'Új Bérlet'}
                                     </button>
                                 </div>
                             </div>
