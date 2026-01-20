@@ -125,7 +125,12 @@ export default function DashboardPage() {
                                     {fullName.charAt(0)}
                                 </div>
                             )}
-                            <h1 className="text-3xl font-bold">Üdvözlünk, {fullName}!</h1>
+                            <div className="flex items-center gap-3 sm:gap-4">
+                                {/* avatar */}
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+                                    Szia, {fullName}!
+                                </h1>
+                            </div>
                         </div>
                         <div className="flex gap-4">
                             <button
