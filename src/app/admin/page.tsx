@@ -208,35 +208,47 @@ export default function AdminDashboard() {
     return (
         <div className="min-h-screen bg-gray-900 text-white p-6">
             <div className="max-w-6xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => router.push('/backup')}
-                            className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-semibold"
-                        >
-                            Biztonsági Mentés
-                        </button>
-                        <button
-                            onClick={() => {
-                                supabase.auth.signOut();
-                                router.push('/login');
-                            }}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm font-semibold"
-                        >
-                            Kijelentkezés
-                        </button>
+                {/* Mobile: stacked | Desktop: inline */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+
+                    {/* Left: Title */}
+                    <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">
+                        Admin Dashboard
+                    </h1>
+
+                    {/* Right: Date picker + Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 w-full sm:w-auto">
+                            <button
+                                onClick={() => router.push('/backup')}
+                                className="flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 bg-green-600 hover:bg-green-700 rounded text-xs sm:text-sm font-semibold whitespace-nowrap"
+                            >
+                                Biztonsági Mentés
+                            </button>
+                            <button
+                                onClick={() => {
+                                    supabase.auth.signOut();
+                                    router.push('/login');
+                                }}
+                                className="flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-700 rounded text-xs sm:text-sm font-semibold whitespace-nowrap"
+                            >
+                                Kijelentkezés
+                            </button>
+                        </div>
                     </div>
                 </div>
 
+                {/* Error & Success Messages */}
                 {error && (
-                    <div className="mb-4 p-4 bg-red-900 border border-red-700 rounded text-red-100">
+                    <div className="mb-4 p-4 bg-red-900 border border-red-700 rounded text-red-100 text-sm">
                         {error}
                     </div>
                 )}
 
                 {success && (
-                    <div className="mb-4 p-4 bg-green-900 border border-green-700 rounded text-green-100">
+                    <div className="mb-4 p-4 bg-green-900 border border-green-700 rounded text-green-100 text-sm">
                         ✓ {success}
                     </div>
                 )}
@@ -251,55 +263,57 @@ export default function AdminDashboard() {
                     />
                 </div>
 
-                <div className="grid gap-4">
+                <div className="grid gap-3 sm:gap-4">
                     {members.map((member) => {
                         const passes = Array.isArray(member.passes) ? member.passes : [];
                         const activePass = passes.find(p => p.is_active);
-                        console.log(`Member: ${member.full_name}, Passes:`, passes, `Active:`, activePass);
                         const passProgress = activePass ? (
-                            <div className="text-sm">
+                            <div className="text-xs sm:text-sm">
                                 <span className="text-blue-400">{activePass.used_sessions}/{activePass.total_sessions}</span>
                                 <span className="text-gray-400"> edzés használva</span>
                             </div>
                         ) : (
-                            <div className="text-sm text-yellow-400">Nincsen aktív bérlet</div>
+                            <div className="text-xs sm:text-sm text-yellow-400">Nincs aktív bérlet</div>
                         );
 
                         return (
                             <div
                                 key={member.id}
-                                className="bg-glass border border-gray-700 rounded-lg p-4 backdrop-blur-sm flex items-center justify-between"
+                                className="bg-glass border border-gray-700 rounded-lg p-3 sm:p-4 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0"
                             >
-                                <div className="flex items-center gap-4 flex-1">
+                                {/* Member Info */}
+                                <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full">
                                     {member.profile_picture_url ? (
                                         <img
                                             src={member.profile_picture_url}
                                             alt={member.full_name}
-                                            className="w-12 h-12 rounded-full object-cover"
+                                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-700 flex items-center justify-center text-sm sm:text-base">
                                             {member.full_name.charAt(0)}
                                         </div>
                                     )}
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold">{member.full_name}</h3>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-semibold text-sm sm:text-base truncate">
+                                            {member.full_name}
+                                        </h3>
                                         {passProgress}
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2">
+                                {/* Action Buttons */}
+                                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                                     <button
                                         onClick={() => handleMarkAttendance(member.id)}
                                         disabled={marking === member.id || !activePass}
                                         title={!activePass ? "Nincs aktív bérlet" : ""}
-                                        className={`px-6 py-2 rounded font-semibold transition ${
-                                            marking === member.id
+                                        className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded font-medium text-xs sm:text-sm transition whitespace-nowrap ${marking === member.id
                                                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                                 : activePass
-                                                ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
-                                                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                        }`}
+                                                    ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                                                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                            }`}
                                     >
                                         {marking === member.id ? 'Jelölés...' : 'Jelöl'}
                                     </button>
@@ -307,13 +321,12 @@ export default function AdminDashboard() {
                                         onClick={() => handleCreatePass(member.id)}
                                         disabled={creatingPass === member.id || !!activePass}
                                         title={activePass ? "A tagnak már van aktív bérlete" : ""}
-                                        className={`px-6 py-2 rounded font-semibold transition ${
-                                            creatingPass === member.id
+                                        className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded font-medium text-xs sm:text-sm transition whitespace-nowrap ${creatingPass === member.id
                                                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                                 : activePass
-                                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                                : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-                                        }`}
+                                                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                                    : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                                            }`}
                                     >
                                         {creatingPass === member.id ? 'Létrehozás...' : 'Új Bérlet'}
                                     </button>

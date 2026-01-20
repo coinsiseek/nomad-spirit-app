@@ -112,37 +112,40 @@ export default function DashboardPage() {
             </Head>
             <div className="min-h-screen bg-gray-900 text-white p-6">
                 <div className="max-w-4xl mx-auto">
-                    <div className="flex justify-between items-center mb-8">
-                        <div className="flex items-center gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                        {/* Left side: Avatar + Greeting */}
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                            {/* Avatar */}
                             {profilePictureUrl ? (
                                 <img
                                     src={profilePictureUrl}
                                     alt={fullName}
-                                    className="w-16 h-16 rounded-full object-cover border-3 border-blue-500"
+                                    className="w-16 h-16 rounded-full object-cover border-3 border-blue-500 self-start sm:self-center"
                                 />
                             ) : (
-                                <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center border-3 border-gray-600 text-2xl font-bold">
+                                <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center border-3 border-gray-600 text-2xl font-bold self-start sm:self-center">
                                     {fullName.charAt(0)}
                                 </div>
                             )}
-                            <div className="flex items-center gap-3 sm:gap-4">
-                                {/* avatar */}
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
-                                    Szia, {fullName}!
-                                </h1>
-                            </div>
+
+                            {/* Greeting — smaller on mobile */}
+                            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center sm:text-left">
+                                Szia, {fullName}!
+                            </h1>
                         </div>
-                        <div className="flex gap-4">
+
+                        {/* Right side: Buttons */}
+                        <div className="flex gap-4 flex-wrap justify-center sm:justify-start">
                             <button
                                 onClick={() => router.push('/profile')}
-                                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-sm font-semibold"
+                                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-sm font-semibold whitespace-nowrap"
                             >
                                 Saját Profil
                             </button>
                             {isAdmin && (
                                 <button
                                     onClick={() => router.push('/admin')}
-                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm font-semibold"
+                                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm font-semibold whitespace-nowrap"
                                 >
                                     Admin Irányítópult
                                 </button>
@@ -152,7 +155,7 @@ export default function DashboardPage() {
                                     supabase.auth.signOut();
                                     router.push('/login');
                                 }}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm font-semibold"
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-sm font-semibold whitespace-nowrap"
                             >
                                 Kijelentkezés
                             </button>
@@ -262,8 +265,8 @@ export default function DashboardPage() {
                         </div>
                     ) : (
                         <div className="bg-glass border border-gray-700 rounded-lg p-8 backdrop-blur-sm text-center">
-                            <h2 className="text-2xl font-bold mb-4">Nincs Aktív Beutazása</h2>
-                            <p className="text-gray-400 mb-6">Még nincs aktív beutazása. Kérje meg edzőjét, hogy szerezzen egyet.</p>
+                            <h2 className="text-2xl font-bold mb-4">Nincs Aktív Bérleted</h2>
+                            <p className="text-gray-400 mb-6">Még nincs aktív bérleted. Kérd meg az edzőt, hogy segítsen.</p>
                             <button
                                 onClick={() => router.push('/')}
                                 className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded font-semibold"

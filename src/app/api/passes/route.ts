@@ -67,7 +67,31 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Check if member already has an active pass
+        const { data: activePass, error: activePassError } = await supabaseAdmin
+            .from('passes')
+            .select('id')
+            .eq('member_id', memberId)
+            .eq('is_active', true)
+            .maybeSingle();
+
+        if (activePassError) {
+            console.error('Error checking for active pass:', activePassError.message, activePassError.details);
+            return NextResponse.json(
+                { error: 'Failed to check for active pass: ' + activePassError.message },
+                { status: 500 }
+            );
+        }
+
+        if (activePass) {
+            return NextResponse.json(
+                { error: 'A member can only have one active pass at a time.' },
+                { status: 400 }
+            );
+        }
+
         // Create new pass
+        console.log('Creating pass for member:', memberId);
         const { data: newPass, error: passError } = await supabaseAdmin
             .from('passes')
             .insert([
@@ -82,11 +106,14 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (passError) {
+            console.error('Pass creation error:', passError.message, passError.details);
             return NextResponse.json(
-                { error: 'Failed to create pass' },
+                { error: 'Failed to create pass: ' + passError.message },
                 { status: 500 }
             );
         }
+
+        console.log('Pass created successfully:', newPass);
 
         return NextResponse.json({
             success: true,
