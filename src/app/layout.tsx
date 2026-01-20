@@ -10,10 +10,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
-        <div className="min-h-screen bg-gray-900 text-white">
-          {children}
-        </div>
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/logonomad.svg" />
+      </head>
+      <body className={`${inter.className} min-h-screen bg-gray-900 text-white`}>
+        {children}
       </body>
     </html>
   );

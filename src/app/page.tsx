@@ -1,16 +1,19 @@
-import { supabase } from '@/lib/supabase';
 
-export default async function Home() {
-  const { data: { session } } = await supabase.auth.getSession();
+import Link from 'next/link';
 
+export default function HomePage() {
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Nomad Spirit</h1>
-      {session ? (
-        <p>Welcome, {session.user.email}!</p>
-      ) : (
-        <p>Please log in.</p>
-      )}
-    </main>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+      <div className="bg-glass border border-glass rounded-xl p-6 backdrop-blur-xs text-center max-w-md w-full">
+        <h1 className="text-2xl font-bold mb-4">Nomad Spirit BJJ</h1>
+        <p className="text-gray-300 mb-6">Track your gym passes and progress</p>
+        <Link
+          href="/login"
+          className="inline-block py-2 px-6 bg-blue-600 hover:bg-blue-700 rounded font-medium"
+        >
+          Log In / Sign Up
+        </Link>
+      </div>
+    </div>
   );
 }
