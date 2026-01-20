@@ -79,9 +79,12 @@ export default function BackupPage() {
                 document.body.removeChild(element);
             } else if (format === 'csv') {
                 // Download as CSV
+                // Download as CSV
                 const passes = backupData.passes || [];
                 const csvHeaders = ['Pass ID', 'Teljes Név', 'Email', 'Összes Edzés', 'Felhasznált Edzés', 'Aktív', 'Létrehozva'];
-                const csvData = passes.map((pass: any) => [
+
+                // Map to array of arrays with known types
+                const csvData: [string, string, string, number, number, string, string][] = passes.map((pass: any) => [
                     pass.id,
                     pass.member?.full_name || 'N/A',
                     pass.member?.email || 'N/A',
@@ -91,10 +94,12 @@ export default function BackupPage() {
                     new Date(pass.created_at).toLocaleDateString('hu-HU'),
                 ]);
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // Generate CSV with proper typing
                 const csv = [
                     csvHeaders.join(','),
-                    ...csvData.map((row: any[]) => row.map((cell: any) => `"${cell}"`).join(',')),
+                    ...csvData.map(row =>
+                        row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+                    ),
                 ].join('\n');
 
                 const element = document.createElement('a');
