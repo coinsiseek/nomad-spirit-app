@@ -91,6 +91,7 @@ export default function BackupPage() {
                     new Date(pass.created_at).toLocaleDateString('hu-HU'),
                 ]);
 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const csv = [
                     csvHeaders.join(','),
                     ...csvData.map((row: any[]) => row.map((cell: any) => `"${cell}"`).join(',')),
