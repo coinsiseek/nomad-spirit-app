@@ -93,7 +93,7 @@ export default function BackupPage() {
 
                 const csv = [
                     csvHeaders.join(','),
-                    ...csvData.map(row => row.map(cell => `"${cell}"`).join(',')),
+                    ...csvData.map((row: any[]) => row.map((cell: any) => `"${cell}"`).join(',')),
                 ].join('\n');
 
                 const element = document.createElement('a');
