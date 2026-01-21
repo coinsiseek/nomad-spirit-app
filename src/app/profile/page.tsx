@@ -48,7 +48,7 @@ export default function ProfilePage() {
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            if (file.size > 1 * 1024 * 1024) { // 5MB limit
                 setError('A fájl mérete legfeljebb 5MB lehet');
                 return;
             }
@@ -75,7 +75,20 @@ export default function ProfilePage() {
             }
 
             const userId = session.user.id;
-            const fileExt = selectedFile.name.split('.').pop();
+
+            // ✅ COMPRESS THE IMAGE HERE
+            const compressedFile = await import('browser-image-compression').then(async ({ default: imageCompression }) => {
+                return await imageCompression(selectedFile, {
+                    maxSizeMB: 0.2,        // Max 200KB (was 1MB)
+                    maxWidthOrHeight: 300, // Resize large images
+                    useWebWorker: true,
+                    fileType: selectedFile.type.startsWith('image/jpeg') ? 'image/jpeg' :
+                        selectedFile.type.startsWith('image/png') ? 'image/png' : 'image/webp',
+                });
+            });
+
+            // Keep original extension for consistency
+            const fileExt = selectedFile.name.split('.').pop()?.toLowerCase() || 'jpg';
             const fileName = `${userId}/profile.${fileExt}`;
 
             // Delete old picture if exists
@@ -89,10 +102,10 @@ export default function ProfilePage() {
                     .remove(fileList.map(f => `${userId}/${f.name}`));
             }
 
-            // Upload new picture
+            // Upload COMPRESSED file
             const { error: uploadError } = await supabase.storage
                 .from('profile_pictures')
-                .upload(fileName, selectedFile, { upsert: true });
+                .upload(fileName, compressedFile, { upsert: true });
 
             if (uploadError) {
                 setError('Nem sikerült feltölteni a képet: ' + uploadError.message);
@@ -122,6 +135,7 @@ export default function ProfilePage() {
             setSuccess('Profilkép sikeresen frissítve!');
             setTimeout(() => setSuccess(''), 3000);
         } catch (err: any) {
+            console.error('Upload error:', err);
             setError(err.message || 'Nem sikerült feltölteni a képet');
         } finally {
             setUploading(false);

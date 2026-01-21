@@ -64,21 +64,33 @@ export default function LoginPage() {
                 return;
             }
 
-            // Upload profile picture if provided
+            // ✅ COMPRESS & UPLOAD PROFILE PICTURE (if provided)
             if (profilePicture && data?.user?.id) {
                 try {
-                    const fileExt = profilePicture.name.split('.').pop();
+                    // Compress the image
+                    const compressedFile = await import('browser-image-compression').then(async ({ default: imageCompression }) => {
+                        return await imageCompression(profilePicture, {
+                            maxSizeMB: 0.2,        // Max 200KB
+                            maxWidthOrHeight: 800, // Resize large images
+                            useWebWorker: true,
+                            fileType: profilePicture.type.startsWith('image/jpeg') ? 'image/jpeg' :
+                                profilePicture.type.startsWith('image/png') ? 'image/png' : 'image/webp',
+                        });
+                    });
+
+                    // Keep original extension
+                    const fileExt = profilePicture.name.split('.').pop()?.toLowerCase() || 'jpg';
                     const fileName = `${data.user.id}/profile.${fileExt}`;
-                    
+
                     const { error: uploadError } = await supabase.storage
                         .from('profile_pictures')
-                        .upload(fileName, profilePicture, { upsert: true });
+                        .upload(fileName, compressedFile, { upsert: true });
 
                     if (uploadError) {
                         console.error('Profile picture upload failed:', uploadError);
                     }
                 } catch (err) {
-                    console.error('Error uploading profile picture:', err);
+                    console.error('Error compressing/uploading profile picture:', err);
                 }
             }
 
