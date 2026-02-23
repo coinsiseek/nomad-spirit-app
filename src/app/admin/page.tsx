@@ -279,10 +279,11 @@ export default function AdminDashboard() {
                         return (
                             <div
                                 key={member.id}
-                                className="bg-glass border border-gray-700 rounded-lg p-3 sm:p-4 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0"
+                                className="bg-glass border border-gray-700 rounded-lg p-3 sm:p-4 backdrop-blur-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 cursor-pointer hover:border-gray-600 hover:bg-opacity-80 transition"
+                                onClick={() => router.push(`/admin/member/${member.id}`)}
                             >
                                 {/* Member Info */}
-                                <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full">
+                                <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full" onClick={(e) => e.stopPropagation()}>
                                     {member.profile_picture_url ? (
                                         <img
                                             src={member.profile_picture_url}
@@ -303,7 +304,7 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {/* Action Buttons */}
-                                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto" onClick={(e) => e.stopPropagation()}>
                                     <button
                                         onClick={() => handleMarkAttendance(member.id)}
                                         disabled={marking === member.id || !activePass}

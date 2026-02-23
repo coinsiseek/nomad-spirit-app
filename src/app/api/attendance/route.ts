@@ -104,32 +104,82 @@ export async function POST(request: NextRequest) {
 
         // Increment used_sessions
         const newUsedSessions = pass.used_sessions + 1;
-        const isActive = newUsedSessions < pass.total_sessions;
+        const isPassComplete = newUsedSessions === pass.total_sessions;
 
-        const { error: updateError } = await supabaseAdmin
-            .from('passes')
-            .update({
-                used_sessions: newUsedSessions,
-                is_active: isActive,
-            })
-            .eq('id', pass.id);
+        if (isPassComplete) {
+            // Pass is complete, delete it along with all its attendance records
+            console.log(`Pass ${pass.id} is complete. Deleting pass and attendances...`);
 
-        if (updateError) {
-            return NextResponse.json(
-                { error: 'Failed to update pass sessions' },
-                { status: 500 }
-            );
+            // Delete all attendance records for this pass
+            const { error: deleteAttendanceError } = await supabaseAdmin
+                .from('attendance')
+                .delete()
+                .eq('pass_id', pass.id);
+
+            if (deleteAttendanceError) {
+                console.error('Error deleting attendance records:', deleteAttendanceError);
+                return NextResponse.json(
+                    { error: 'Failed to cleanup attendance records' },
+                    { status: 500 }
+                );
+            }
+
+            // Delete the pass
+            const { error: deletePassError } = await supabaseAdmin
+                .from('passes')
+                .delete()
+                .eq('id', pass.id);
+
+            if (deletePassError) {
+                console.error('Error deleting pass:', deletePassError);
+                return NextResponse.json(
+                    { error: 'Failed to cleanup pass' },
+                    { status: 500 }
+                );
+            }
+
+            console.log(`Successfully deleted pass ${pass.id} and its attendances`);
+
+            return NextResponse.json({
+                success: true,
+                attendance,
+                passStatus: {
+                    used_sessions: newUsedSessions,
+                    remaining_sessions: 0,
+                    is_active: false,
+                    passDeleted: true,
+                    message: 'Pass completed and automatically deleted',
+                },
+            });
+        } else {
+            // Pass is not complete, just update the sessions
+            const isActive = newUsedSessions < pass.total_sessions;
+
+            const { error: updateError } = await supabaseAdmin
+                .from('passes')
+                .update({
+                    used_sessions: newUsedSessions,
+                    is_active: isActive,
+                })
+                .eq('id', pass.id);
+
+            if (updateError) {
+                return NextResponse.json(
+                    { error: 'Failed to update pass sessions' },
+                    { status: 500 }
+                );
+            }
+
+            return NextResponse.json({
+                success: true,
+                attendance,
+                passStatus: {
+                    used_sessions: newUsedSessions,
+                    remaining_sessions: pass.total_sessions - newUsedSessions,
+                    is_active: isActive,
+                },
+            });
         }
-
-        return NextResponse.json({
-            success: true,
-            attendance,
-            passStatus: {
-                used_sessions: newUsedSessions,
-                remaining_sessions: pass.total_sessions - newUsedSessions,
-                is_active: isActive,
-            },
-        });
     } catch (err) {
         console.error('Error marking attendance:', err);
         return NextResponse.json(
