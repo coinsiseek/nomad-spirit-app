@@ -20,7 +20,10 @@ interface Member {
 export default function AdminDashboard() {
     const [members, setMembers] = useState<Member[]>([]);
     const [loading, setLoading] = useState(true);
-    const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
+    const [sessionDate, setSessionDate] = useState(() => {
+        const today = new Date();
+        return today.toLocaleDateString('en-CA'); // en-CA format gives YYYY-MM-DD in local timezone
+    });
     const [marking, setMarking] = useState<string | null>(null);
     const [creatingPass, setCreatingPass] = useState<string | null>(null);
     const [error, setError] = useState('');
