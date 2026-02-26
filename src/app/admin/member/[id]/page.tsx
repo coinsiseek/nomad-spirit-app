@@ -121,9 +121,7 @@ export default function MemberViewPage() {
     firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
     const monthName = currentMonth.toLocaleString('hu-HU', { month: 'long', year: 'numeric' });
 
-    const attendanceDateSet = new Set(attendanceDates.map(date =>
-        new Date(date).toISOString().split('T')[0]
-    ));
+    const attendanceDateSet = new Set(attendanceDates.map(date => date));
 
     const calendarDays = [];
     for (let i = 0; i < firstDayOfMonth; i++) {
@@ -241,11 +239,7 @@ export default function MemberViewPage() {
                                     return <div key={`empty-${idx}`} className="aspect-square"></div>;
                                 }
 
-                                const dateStr = new Date(
-                                    currentMonth.getFullYear(),
-                                    currentMonth.getMonth(),
-                                    day
-                                ).toISOString().split('T')[0];
+                                const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
                                 const isAttendanceDay = attendanceDateSet.has(dateStr);
 

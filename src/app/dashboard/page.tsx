@@ -91,9 +91,7 @@ export default function DashboardPage() {
     firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
     const monthName = currentMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
     
-    const attendanceDateSet = new Set(attendanceDates.map(date => 
-        new Date(date).toISOString().split('T')[0]
-    ));
+    const attendanceDateSet = new Set(attendanceDates.map(date => date));
 
     const calendarDays = [];
     // Add empty cells for days before month starts
